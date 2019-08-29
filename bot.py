@@ -30,11 +30,10 @@ def findat(msg):
 
 @bot.message_handler(commands=['start']) # welcome message handler
 def send_welcome(message):
-    bot.reply_to(message, 'Benvenuto!!')
+    print(message)
+    name=message.from_user.first_name
+    bot.reply_to(message, 'Ciao '+name)
 
-@bot.message_handler(commands=['conqui']) # welcome message handler
-def send_conqui(message):
-    bot.reply_to(message, 'Ciao alfix!')
 
 @bot.message_handler(commands=['help']) # help message handler
 def send_welcome(message):
@@ -42,8 +41,9 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['dw'])
 def download_(message):
-    CHAT_ID=requests.get(f"https://api.telegram.org/bot938633123:AAGsU0pSh2vsLJNS71q9V9OKZLlMjBnbWpg/getUpdates").json()['result'][-1]['message']['chat']['id']
-    bot.send_photo(CHAT_ID, open('C:\\Users\\Marco\\Downloads\\wp.jpg', 'rb'))
+    print(message.from_user.id)
+    chat_id=message.from_user.id
+    bot.send_photo(chat_id, open('C:\\Users\\Marco\\Downloads\\wp.jpg', 'rb'))
 
 
 @bot.message_handler(func=lambda msg: msg.text is not None and '@' in msg.text)
