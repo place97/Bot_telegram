@@ -1,9 +1,26 @@
-import time
-import requests
-import telebot
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
+from chatterbot.response_selection import get_most_frequent_response
+from chatterbot.comparisons import levenshtein_distance
+import time,logging,requests,telebot
 
+
+logging.basicConfig(level=logging.CRITICAL)
 TOKEN = "938633123:AAGsU0pSh2vsLJNS71q9V9OKZLlMjBnbWpg"
 bot = telebot.TeleBot(token=TOKEN)
+
+bot_msg = ChatBot(
+    "Karen",
+    storage_adapter = "chatterbot.storage.SQLStorageAdapter",
+    database = "./db.sqlite3",
+    logic_adapters = [
+
+        "chatterbot.logic.BestMatch",
+        'chatterbot.logic.MathematicalEvaluation',
+    ],
+    statement_comparison_function = levenshtein_distance,
+    response_selection_method = get_most_frequent_response
+)
 
 def findat(msg):
     # from a list of texts, it finds the one with the '@' sign
@@ -29,8 +46,6 @@ def download_(message):
     bot.send_photo(CHAT_ID, open('C:\\Users\\Marco\\Downloads\\wp.jpg', 'rb'))
 
 
-
-
 @bot.message_handler(func=lambda msg: msg.text is not None and '@' in msg.text)
 # lambda function finds messages with the '@' sign in them
 # in case msg.text doesn't exist, the handler doesn't process it
@@ -42,6 +57,19 @@ def at_converter(message):
     else:
         insta_link = "https://instagram.com/{}".format(at_text[1:])
         bot.reply_to(message, insta_link)
+
+
+@bot.message_handler(func=lambda msg: msg.text is not None)
+def conversation(message):
+    texts = message.text
+    print("User:"+message.from_user.first_name +" Text: "+message.text)
+    trainer = ChatterBotCorpusTrainer(bot_msg)
+    trainer.train('chatterbot.corpus.italian.conversations')
+    bot_response = str(bot_msg.get_response(texts))
+    print("Bot:"+bot_response)
+    bot.reply_to(message,bot_response)
+
+
 
 while True:
     try:
