@@ -1,26 +1,9 @@
-from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
-from chatterbot.response_selection import get_most_frequent_response
-from chatterbot.comparisons import levenshtein_distance
-import time,logging,requests,telebot
+import time,logging,requests,telebot,_json
 
-
-logging.basicConfig(level=logging.CRITICAL)
 TOKEN = "938633123:AAGsU0pSh2vsLJNS71q9V9OKZLlMjBnbWpg"
 bot = telebot.TeleBot(token=TOKEN)
 
-bot_msg = ChatBot(
-    "Karen",
-    storage_adapter = "chatterbot.storage.SQLStorageAdapter",
-    database = "./db.sqlite3",
-    logic_adapters = [
 
-        "chatterbot.logic.BestMatch",
-        'chatterbot.logic.MathematicalEvaluation',
-    ],
-    statement_comparison_function = levenshtein_distance,
-    response_selection_method = get_most_frequent_response
-)
 
 def findat(msg):
     # from a list of texts, it finds the one with the '@' sign
@@ -59,20 +42,41 @@ def at_converter(message):
         bot.reply_to(message, insta_link)
 
 
-@bot.message_handler(func=lambda msg: msg.text is not None)
-def conversation(message):
-    texts = message.text
-    print("User:"+message.from_user.first_name +" Text: "+message.text)
-    trainer = ChatterBotCorpusTrainer(bot_msg)
-    trainer.train('chatterbot.corpus.italian.conversations')
-    bot_response = str(bot_msg.get_response(texts))
-    print("Bot:"+bot_response)
-    bot.reply_to(message,bot_response)
 
+
+@bot.message_handler(func=lambda msg: msg.text is not None)
+def send_weather(message):
+    api_key="d6fc917ff572a05b14832847e59b5302"
+    base_url="http://api.openweathermap.org/data/2.5/weather?"
+    city_name=message.text
+    complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+    response = requests.get(complete_url)
+    x = response.json()
+    print("User:"+message.from_user.first_name +" Text: "+message.text)
+    print(x)
+    if x["cod"] != "404":
+        y = x["main"]
+        current_temperature =int(y["temp"])-273,15
+        current_pressure = y["pressure"]
+        current_humidiy = y["humidity"]
+        z = x["weather"]
+        weather_description = z[0]["description"]
+        bot_response=("Temperature= " +
+                    str(current_temperature) +" C"
+                    "\natmospheric pressure (in hPa unit) = " +
+                    str(current_pressure) +
+                    "\nhumidity = " +
+                    str(current_humidiy) +" %"
+                    "\ndescription = " +
+                        str(weather_description))
+        bot.reply_to(message,bot_response)
+    else:
+        bot.reply_to(message,"City not found")
 
 
 while True:
     try:
+        print("Start....")
         bot.polling()
         # ConnectionError and ReadTimeout because of possible timout of the requests library
         # maybe there are others, therefore Exception
