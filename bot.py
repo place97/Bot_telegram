@@ -2,7 +2,8 @@ import time,logging,requests,telebot,_json
 
 TOKEN = "938633123:AAGsU0pSh2vsLJNS71q9V9OKZLlMjBnbWpg"
 bot = telebot.TeleBot(token=TOKEN)
-
+defaultEmoji = u'\U0001F609'
+thermometer= u'\U0001F321'
 
 
 def findat(msg):
@@ -14,7 +15,7 @@ def findat(msg):
 @bot.message_handler(commands=['start']) # welcome message handler
 def send_welcome(message):
     print(message)
-    name=message.from_user.first_name
+    name=message.from_user.first_name+" "+defaultEmoji
     bot.reply_to(message, 'Ciao '+name)
 
 
@@ -52,22 +53,26 @@ def send_weather(message):
     complete_url = base_url + "appid=" + api_key + "&q=" + city_name
     response = requests.get(complete_url)
     x = response.json()
+    print(message)
     print("User:"+message.from_user.first_name +" Text: "+message.text)
     print(x)
     if x["cod"] != "404":
         y = x["main"]
         current_temperature =int(y["temp"])-273,15
-        current_pressure = y["pressure"]
+        max_temperature = int(y["temp_max"])-273,15
+        min_temperature = int(y["temp_min"])-273,15
         current_humidiy = y["humidity"]
         z = x["weather"]
         weather_description = z[0]["description"]
-        bot_response=("Temperature= " +
-                    str(current_temperature) +" C"
-                    "\natmospheric pressure (in hPa unit) = " +
-                    str(current_pressure) +
-                    "\nhumidity = " +
+        bot_response=("Temperatura attuale:  " +str(thermometer)+" "+
+                    str(current_temperature) +" °C"+
+                    "\nTemperatura max : " +str(thermometer)+" "+
+                    str(max_temperature) +" °C"+
+                    "\nTemperatura min : " +str(thermometer)+" "+
+                    str(min_temperature) +" °C"+
+                    "\nUmidità :  " +
                     str(current_humidiy) +" %"
-                    "\ndescription = " +
+                    "\nInfo :  " +
                         str(weather_description))
         bot.reply_to(message,bot_response)
     else:
