@@ -32,6 +32,7 @@ def send_welcome(message):
     bot.reply_to(message, 'Ciao '+name)
 
 
+
 @bot.message_handler(commands=['help']) # help message handler
 def send_welcome(message):
     bot.reply_to(message, 'ALPHA = FEATURES MAY NOT WORK')
@@ -41,6 +42,7 @@ def download_(message):
     print(message.from_user.id)
     chat_id=message.from_user.id
     bot.send_photo(chat_id, open('C:\\Users\\Marco\\Downloads\\wp.jpg', 'rb'))
+
 
 
 @bot.message_handler(func=lambda msg: msg.text is not None and '@' in msg.text)
@@ -70,6 +72,7 @@ def send_weather(message):
     print("User:"+message.from_user.first_name +" Text: "+message.text)
     print(x)
     if x["cod"] != "404":
+        chat_id=message.from_user.id
         cityName = x.get('name')
         countryName = x.get('sys').get('country')
         temp_current = int(x.get('main').get('temp'))-273,15
@@ -79,7 +82,7 @@ def send_weather(message):
         weatherID = x.get('weather')[0].get('id')     # gets ID of weather description, used for emoji
         emoji = getEmoji(weatherID)
         bot_response= cityName + ', ' + countryName + ': ' + str(temp_current) + '°C\n' + 'Max: ' + str(max_temperature) + '°C - ' + 'Min: ' + str(min_temperature)+ '°C\n' +   description_brief +str(emoji) + str(emoji)
-        bot.reply_to(message,bot_response)
+        bot.reply_to(bot.send_location(chat_id,x.get('coord').get('lat'),x.get('coord').get('lon')),bot_response)
     else:
         bot.reply_to(message,"City not found")
 
