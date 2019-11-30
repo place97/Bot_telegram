@@ -14,7 +14,7 @@ hot = u'\U0001F525'             # Code: 904
 defaultEmoji = u'\U0001F609'    # default emojis
 
 ###
-TOKEN = "938633123:AAGsU0pSh2vsLJNS71q9V9OKZLlMjBnbWpg"
+TOKEN = "your_token"
 bot = telebot.TeleBot(token=TOKEN)
 
 
@@ -29,40 +29,13 @@ def findat(msg):
 def send_welcome(message):
     print(message)
     name=message.from_user.first_name+" "+defaultEmoji
-    bot.reply_to(message, 'Ciao '+name)
-
-
-
-@bot.message_handler(commands=['help']) # help message handler
-def send_welcome(message):
-    bot.reply_to(message, 'ALPHA = FEATURES MAY NOT WORK')
-
-@bot.message_handler(commands=['dw'])
-def download_(message):
-    print(message.from_user.id)
-    chat_id=message.from_user.id
-    bot.send_photo(chat_id, open('C:\\Users\\Marco\\Downloads\\wp.jpg', 'rb'))
-
-
-
-@bot.message_handler(func=lambda msg: msg.text is not None and '@' in msg.text)
-# lambda function finds messages with the '@' sign in them
-# in case msg.text doesn't exist, the handler doesn't process it
-def at_converter(message):
-    texts = message.text.split()
-    at_text = findat(texts)
-    if at_text == '@': # in case it's just the '@', skip
-        pass
-    else:
-        insta_link = "https://instagram.com/{}".format(at_text[1:])
-        bot.reply_to(message, insta_link)
-
-
+    initial_message='Karen_weather_bot  started\nPlease enter the city name as \'text\''
+    bot.reply_to(message, initial_message)
 
 
 @bot.message_handler(func=lambda msg: msg.text is not None)
 def send_weather(message):
-    api_key="d6fc917ff572a05b14832847e59b5302"
+    api_key="your_key"
     base_url="http://api.openweathermap.org/data/2.5/weather?"
     city_name=message.text
     complete_url = base_url + "appid=" + api_key + "&q=" + city_name
@@ -105,7 +78,7 @@ def getEmoji(weatherID):
             return clearSky
         elif weatherID == 801:
             return fewClouds
-        elif weatherID==802 or weatherID==803 or weatherID==803:
+        elif weatherID==802 or weatherID==803 or weatherID==803 or weatherID==804:
             return clouds
         elif weatherID == 904:
             return hot
