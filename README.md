@@ -2,7 +2,7 @@ Telegram Weather Bot
 ===================
 
 
-[@Karen_weather_bot](http://telegram.me/Karen_weather_bot)
+[@karen_97bot](http://telegram.me/karen_97bot)
 ----------
 
 

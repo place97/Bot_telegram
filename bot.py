@@ -35,7 +35,7 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda msg: msg.text is not None)
 def send_weather(message):
-    api_key="your_key"
+    api_key="your_api_key"
     base_url="http://api.openweathermap.org/data/2.5/weather?"
     city_name=message.text
     complete_url = base_url + "appid=" + api_key + "&q=" + city_name
